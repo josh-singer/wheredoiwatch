@@ -238,12 +238,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900" style={{backgroundImage: "url('/nightsky.jpeg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed"}}>
+    <div className="min-h-screen text-gray-900" style={{backgroundImage: "url('/televisions.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed"}}>
       <div className="max-w-2xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl mb-2 text-white" style={{fontFamily: "var(--font-display)"}}>Where Do I Watch?</h1>
-          <p className="text-white">Easy to find, no stress 👍</p>
+          <h1 className="text-6xl mb-2 text-white" style={{fontFamily: "var(--font-display)", textShadow: "3px 3px 0 #000, 6px 6px 0 #000, 9px 9px 0 #000"}}>Where Do I Watch?</h1>
+          <p className="text-white text-lg font-bold" style={{textShadow: "2px 2px 0 #000, 4px 4px 0 #000, 6px 6px 8px #000, 0px 0px 20px #000"}}>Easy to find, no stress 👍</p>
         </div>
 
         {/* Search */}

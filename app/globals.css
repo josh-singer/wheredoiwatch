@@ -20,7 +20,7 @@
 }
 
 body {
-  background: url('/nightsky.jpeg') center center / cover no-repeat fixed;
+  background: url('/televisions.png') center center / cover no-repeat fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
