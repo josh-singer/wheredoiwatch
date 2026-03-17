@@ -37,7 +37,7 @@ function ProviderSection({ label, providers, link }: { label: string; providers:
   if (providers.length === 0) return null;
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-2">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">{label}</p>
       <div className="flex flex-wrap gap-3">
         {providers.map((p) => {
           const tile = (
@@ -46,7 +46,7 @@ function ProviderSection({ label, providers, link }: { label: string; providers:
               title={p.name}
               className="flex flex-col items-center gap-1.5 group cursor-pointer"
             >
-              <div className="w-14 h-14 rounded-xl overflow-hidden shadow ring-1 ring-violet-200 transition-transform group-hover:scale-105">
+              <div className="w-14 h-14 rounded-xl overflow-hidden shadow ring-1 ring-gray-200 transition-transform group-hover:scale-105">
                 <Image
                   src={p.logo}
                   alt={p.name}
@@ -55,7 +55,7 @@ function ProviderSection({ label, providers, link }: { label: string; providers:
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-xs text-violet-400 group-hover:text-violet-700 text-center w-14 truncate">{p.name}</span>
+              <span className="text-xs text-gray-400 group-hover:text-gray-700 text-center w-14 truncate">{p.name}</span>
             </div>
           );
           return link ? (
@@ -96,9 +96,9 @@ function ProviderCard({
   ];
 
   return (
-    <div className="mt-6 rounded-2xl bg-white border border-violet-200 overflow-hidden shadow-sm">
+    <div className="mt-6 rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="flex gap-4 p-5 border-b border-violet-100">
+      <div className="flex gap-4 p-5 border-b border-gray-100">
         {result.posterPath && (
           <Image
             src={`https://image.tmdb.org/t/p/w185${result.posterPath}`}
@@ -109,27 +109,27 @@ function ProviderCard({
           />
         )}
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold leading-snug text-violet-900">
+          <h2 className="text-lg font-semibold leading-snug text-gray-900">
             {result.title}
-            {result.year && <span className="text-violet-400 font-normal ml-2 text-base">({result.year})</span>}
+            {result.year && <span className="text-gray-400 font-normal ml-2 text-base">({result.year})</span>}
           </h2>
-          <p className="text-xs text-violet-400 uppercase mt-0.5">{result.mediaType === "tv" ? "TV Series" : "Movie"}</p>
+          <p className="text-xs text-gray-400 uppercase mt-0.5">{result.mediaType === "tv" ? "TV Series" : "Movie"}</p>
           {result.overview && (
-            <p className="text-sm text-violet-700/70 mt-2 line-clamp-3">{result.overview}</p>
+            <p className="text-sm text-gray-600 mt-2 line-clamp-3">{result.overview}</p>
           )}
         </div>
       </div>
 
       {/* Country picker */}
-      <div className="flex gap-1 px-5 py-3 border-b border-violet-100 overflow-x-auto">
+      <div className="flex gap-1 px-5 py-3 border-b border-gray-100 overflow-x-auto">
         {COUNTRIES.map((c) => (
           <button
             key={c.code}
             onClick={() => onCountryChange(c.code)}
             className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
               country === c.code
-                ? "bg-violet-600 text-white"
-                : "bg-violet-100 text-violet-500 hover:bg-violet-200 hover:text-violet-700"
+                ? "bg-gray-700 text-white"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
             }`}
           >
             {c.label}
@@ -140,8 +140,8 @@ function ProviderCard({
       {/* Providers */}
       <div className="p-5">
         {!hasAny ? (
-          <p className="text-violet-400 text-sm">
-            Not available for streaming, rent, or purchase in <strong className="text-violet-700">{country}</strong>.
+          <p className="text-gray-400 text-sm">
+            Not available for streaming, rent, or purchase in <strong className="text-gray-700">{country}</strong>.
           </p>
         ) : (
           <div className="flex flex-col gap-5">
@@ -151,9 +151,9 @@ function ProviderCard({
             <ProviderSection label="Buy" providers={data.providers!.buy} link={data.link} />
           </div>
         )}
-        <p className="text-xs text-violet-300 mt-5">
+        <p className="text-xs text-gray-300 mt-5">
           Streaming data provided by{" "}
-          <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-600 underline">
+          <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-600 underline">
             TMDB
           </a>{" "}
           via JustWatch.
