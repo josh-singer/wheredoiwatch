@@ -238,18 +238,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900" style={{background: "radial-gradient(ellipse 80% 40% at 50% 42%, #a78bfa77 0%, transparent 100%), linear-gradient(135deg, #ede9fe 0%, #f5f3ff 60%, #ede9fe 100%)"}}>
+    <div className="min-h-screen text-gray-900" style={{backgroundImage: "url('/nightsky.jpeg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed"}}>
       <div className="max-w-2xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-5xl mb-2 text-violet-900" style={{fontFamily: "var(--font-display)"}}>Where Do I Watch?</h1>
-          <p className="text-violet-500">Easy to find, no stress 👍</p>
+          <h1 className="text-5xl mb-2 text-white" style={{fontFamily: "var(--font-display)"}}>Where Do I Watch?</h1>
+          <p className="text-white">Easy to find, no stress 👍</p>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <div className="flex items-center gap-3 bg-white border border-violet-200 rounded-2xl px-4 py-3 focus-within:border-violet-400 shadow-lg transition-colors">
-            <svg className="w-5 h-5 text-violet-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl px-4 py-3 focus-within:border-gray-400 shadow-lg transition-colors">
+            <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
             </svg>
             <input
@@ -257,11 +257,11 @@ export default function Home() {
               value={query}
               onChange={(e) => handleInput(e.target.value)}
               placeholder="Search for a movie or TV show..."
-              className="flex-1 bg-transparent outline-none text-violet-900 placeholder-violet-300 text-base"
+              className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-400 text-base"
               autoFocus
             />
             {searching && (
-              <svg className="w-4 h-4 text-violet-400 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
@@ -269,7 +269,7 @@ export default function Home() {
             {query && (
               <button
                 onClick={() => { setQuery(""); setResults([]); setSelected(null); setProviderData(null); setError(null); }}
-                className="text-violet-300 hover:text-violet-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -280,12 +280,12 @@ export default function Home() {
 
           {/* Dropdown results */}
           {results.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-violet-200 rounded-2xl overflow-hidden shadow-xl z-10">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xl z-10">
               {results.map((r) => (
                 <button
                   key={`${r.mediaType}-${r.id}`}
                   onClick={() => handleSelect(r)}
-                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-violet-50 transition-colors text-left border-b border-violet-100 last:border-0"
+                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 last:border-0"
                 >
                   {r.posterPath ? (
                     <Image
@@ -296,18 +296,18 @@ export default function Home() {
                       className="rounded object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-8 h-12 rounded bg-violet-100 flex-shrink-0 flex items-center justify-center text-violet-300">
+                    <div className="w-8 h-12 rounded bg-gray-100 flex-shrink-0 flex items-center justify-center text-gray-300">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                       </svg>
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-violet-900 truncate">
+                    <p className="text-sm font-medium text-gray-900 truncate">
                       {r.title}
-                      {r.year && <span className="text-violet-400 font-normal ml-1">({r.year})</span>}
+                      {r.year && <span className="text-gray-400 font-normal ml-1">({r.year})</span>}
                     </p>
-                    <p className="text-xs text-violet-400">{r.mediaType === "tv" ? "TV Series" : "Movie"}</p>
+                    <p className="text-xs text-gray-400">{r.mediaType === "tv" ? "TV Series" : "Movie"}</p>
                   </div>
                 </button>
               ))}

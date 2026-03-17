@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poller_One } from "next/font/google";
+import { Geist, Geist_Mono, Rye } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const pollerOne = Poller_One({
+const rye = Rye({
   variable: "--font-display",
   subsets: ["latin"],
   weight: "400",
@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${pollerOne.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rye.variable} antialiased`}
       >
         {children}
       </body>
