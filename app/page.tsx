@@ -1,65 +1,348 @@
+"use client";
+
+import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 
-export default function Home() {
+// --- Types ---
+interface SearchResult {
+  id: number;
+  mediaType: "movie" | "tv";
+  title: string;
+  posterPath: string | null;
+  year: string | null;
+  overview: string;
+}
+
+interface Provider {
+  id: number;
+  name: string;
+  logo: string;
+}
+
+interface ProviderGroups {
+  streaming: Provider[];
+  free: Provider[];
+  rent: Provider[];
+  buy: Provider[];
+}
+
+interface ProvidersResponse {
+  country: string;
+  link: string | null;
+  providers: ProviderGroups | null;
+}
+
+// --- Sub-components ---
+function ProviderSection({ label, providers, link }: { label: string; providers: Provider[]; link: string | null }) {
+  if (providers.length === 0) return null;
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-2">{label}</p>
+      <div className="flex flex-wrap gap-3">
+        {providers.map((p) => {
+          const tile = (
+            <div
+              key={p.id}
+              title={p.name}
+              className="flex flex-col items-center gap-1.5 group cursor-pointer"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div className="w-14 h-14 rounded-xl overflow-hidden shadow ring-1 ring-violet-200 transition-transform group-hover:scale-105">
+                <Image
+                  src={p.logo}
+                  alt={p.name}
+                  width={56}
+                  height={56}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="text-xs text-violet-400 group-hover:text-violet-700 text-center w-14 truncate">{p.name}</span>
+            </div>
+          );
+          return link ? (
+            <a key={p.id} href={link} target="_blank" rel="noopener noreferrer">{tile}</a>
+          ) : tile;
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProviderCard({
+  result,
+  data,
+  country,
+  onCountryChange,
+}: {
+  result: SearchResult;
+  data: ProvidersResponse;
+  country: string;
+  onCountryChange: (c: string) => void;
+}) {
+  const hasAny =
+    data.providers &&
+    (data.providers.streaming.length > 0 ||
+      data.providers.free.length > 0 ||
+      data.providers.rent.length > 0 ||
+      data.providers.buy.length > 0);
+
+  const COUNTRIES = [
+    { code: "US", label: "🇺🇸 US" },
+    { code: "GB", label: "🇬🇧 UK" },
+    { code: "CA", label: "🇨🇦 CA" },
+    { code: "AU", label: "🇦🇺 AU" },
+    { code: "DE", label: "🇩🇪 DE" },
+    { code: "FR", label: "🇫🇷 FR" },
+    { code: "JP", label: "🇯🇵 JP" },
+  ];
+
+  return (
+    <div className="mt-6 rounded-2xl bg-white border border-violet-200 overflow-hidden shadow-sm">
+      {/* Header */}
+      <div className="flex gap-4 p-5 border-b border-violet-100">
+        {result.posterPath && (
+          <Image
+            src={`https://image.tmdb.org/t/p/w185${result.posterPath}`}
+            alt={result.title}
+            width={60}
+            height={90}
+            className="rounded-lg object-cover flex-shrink-0"
+          />
+        )}
+        <div className="min-w-0">
+          <h2 className="text-lg font-semibold leading-snug text-violet-900">
+            {result.title}
+            {result.year && <span className="text-violet-400 font-normal ml-2 text-base">({result.year})</span>}
+          </h2>
+          <p className="text-xs text-violet-400 uppercase mt-0.5">{result.mediaType === "tv" ? "TV Series" : "Movie"}</p>
+          {result.overview && (
+            <p className="text-sm text-violet-700/70 mt-2 line-clamp-3">{result.overview}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Country picker */}
+      <div className="flex gap-1 px-5 py-3 border-b border-violet-100 overflow-x-auto">
+        {COUNTRIES.map((c) => (
+          <button
+            key={c.code}
+            onClick={() => onCountryChange(c.code)}
+            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              country === c.code
+                ? "bg-violet-600 text-white"
+                : "bg-violet-100 text-violet-500 hover:bg-violet-200 hover:text-violet-700"
+            }`}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Providers */}
+      <div className="p-5">
+        {!hasAny ? (
+          <p className="text-violet-400 text-sm">
+            Not available for streaming, rent, or purchase in <strong className="text-violet-700">{country}</strong>.
           </p>
+        ) : (
+          <div className="flex flex-col gap-5">
+            <ProviderSection label="Stream" providers={data.providers!.streaming} link={data.link} />
+            <ProviderSection label="Free / Ad-supported" providers={data.providers!.free} link={data.link} />
+            <ProviderSection label="Rent" providers={data.providers!.rent} link={data.link} />
+            <ProviderSection label="Buy" providers={data.providers!.buy} link={data.link} />
+          </div>
+        )}
+        <p className="text-xs text-violet-300 mt-5">
+          Streaming data provided by{" "}
+          <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:text-violet-600 underline">
+            TMDB
+          </a>{" "}
+          via JustWatch.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// --- Main Page ---
+export default function Home() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [selected, setSelected] = useState<SearchResult | null>(null);
+  const [providerData, setProviderData] = useState<ProvidersResponse | null>(null);
+  const [loadingProviders, setLoadingProviders] = useState(false);
+  const [country, setCountry] = useState(process.env.NEXT_PUBLIC_DEFAULT_COUNTRY ?? "US");
+  const [error, setError] = useState<string | null>(null);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const fetchProviders = useCallback(async (result: SearchResult, countryCode: string) => {
+    setLoadingProviders(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/providers?id=${result.id}&type=${result.mediaType}&country=${countryCode}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Failed to load providers");
+      setProviderData(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setLoadingProviders(false);
+    }
+  }, []);
+
+  const handleSelect = useCallback(
+    (result: SearchResult) => {
+      setSelected(result);
+      setResults([]);
+      setQuery(result.title);
+      fetchProviders(result, country);
+    },
+    [country, fetchProviders]
+  );
+
+  const handleCountryChange = useCallback(
+    (newCountry: string) => {
+      setCountry(newCountry);
+      if (selected) fetchProviders(selected, newCountry);
+    },
+    [selected, fetchProviders]
+  );
+
+  const handleInput = (value: string) => {
+    setQuery(value);
+    setSelected(null);
+    setProviderData(null);
+    setError(null);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!value.trim()) {
+      setResults([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(value)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "Search failed");
+        setResults(data.results ?? []);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Search failed");
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 350);
+  };
+
+  return (
+    <div className="min-h-screen text-gray-900" style={{background: "radial-gradient(ellipse 80% 40% at 50% 42%, #a78bfa77 0%, transparent 100%), linear-gradient(135deg, #ede9fe 0%, #f5f3ff 60%, #ede9fe 100%)"}}>
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-5xl mb-2 text-violet-900" style={{fontFamily: "var(--font-display)"}}>Where Do I Watch?</h1>
+          <p className="text-violet-500">Easy to find, no stress 👍</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Search */}
+        <div className="relative">
+          <div className="flex items-center gap-3 bg-white border border-violet-200 rounded-2xl px-4 py-3 focus-within:border-violet-400 shadow-lg transition-colors">
+            <svg className="w-5 h-5 text-violet-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => handleInput(e.target.value)}
+              placeholder="Search for a movie or TV show..."
+              className="flex-1 bg-transparent outline-none text-violet-900 placeholder-violet-300 text-base"
+              autoFocus
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            {searching && (
+              <svg className="w-4 h-4 text-violet-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            )}
+            {query && (
+              <button
+                onClick={() => { setQuery(""); setResults([]); setSelected(null); setProviderData(null); setError(null); }}
+                className="text-violet-300 hover:text-violet-600 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          {/* Dropdown results */}
+          {results.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-violet-200 rounded-2xl overflow-hidden shadow-xl z-10">
+              {results.map((r) => (
+                <button
+                  key={`${r.mediaType}-${r.id}`}
+                  onClick={() => handleSelect(r)}
+                  className="flex items-center gap-3 w-full px-4 py-3 hover:bg-violet-50 transition-colors text-left border-b border-violet-100 last:border-0"
+                >
+                  {r.posterPath ? (
+                    <Image
+                      src={`https://image.tmdb.org/t/p/w92${r.posterPath}`}
+                      alt={r.title}
+                      width={32}
+                      height={48}
+                      className="rounded object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-8 h-12 rounded bg-violet-100 flex-shrink-0 flex items-center justify-center text-violet-300">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                      </svg>
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-violet-900 truncate">
+                      {r.title}
+                      {r.year && <span className="text-violet-400 font-normal ml-1">({r.year})</span>}
+                    </p>
+                    <p className="text-xs text-violet-400">{r.mediaType === "tv" ? "TV Series" : "Movie"}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      </main>
+
+        {/* Error */}
+        {error && (
+          <div className="mt-4 p-4 rounded-xl bg-red-900/20 border border-red-400/20 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Loading providers */}
+        {loadingProviders && (
+          <div className="mt-6 flex items-center justify-center gap-2 text-violet-400 text-sm">
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            Looking up streaming services...
+          </div>
+        )}
+
+        {/* Provider results */}
+        {selected && providerData && !loadingProviders && (
+          <ProviderCard
+            result={selected}
+            data={providerData}
+            country={country}
+            onCountryChange={handleCountryChange}
+          />
+        )}
+      </div>
     </div>
   );
 }
